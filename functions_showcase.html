@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Démonstration des Fonctions JavaScript</title>
+    
+    <style>
+        /* Variables et Réinitialisation de Base */
+        :root {
+            --bg-dark: #1f2937;
+            --bg-card: #374151;
+            --bg-code: #4b5563;
+            --text-light: #f9fafb;
+            --text-muted: #9ca3af;
+            --accent-teal: #2dd4bf;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        }
+
+        /* Styles Globaux */
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 20px;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* En-tête */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--accent-teal);
+            margin-bottom: 8px;
+        }
+        header p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+        }
+
+        /* Conteneur Principal (Simule main-container) */
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Système d'Onglets */
+        .tab-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--bg-code);
+        }
+        .tab-button {
+            flex-grow: 1;
+            padding: 12px 0;
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--text-muted);
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            transition: color 0.3s, border-bottom 0.3s;
+        }
+        .tab-button.active {
+            color: var(--accent-teal);
+            border-bottom: 3px solid var(--accent-teal);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 15px 0;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Inputs */
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--bg-code);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        textarea {
+            resize: vertical;
+        }
+
+        /* Boutons d'Action */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .calc-button {
+            flex-grow: 1;
+            padding: 10px 15px;
+            background-color: var(--accent-teal);
+            color: var(--bg-dark);
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .calc-button:hover {
+            background-color: #0d9488;
+        }
+        .calc-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Affichage des Résultats Interactifs */
+        #interactive-result-output {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--bg-code);
+            border-radius: 8px;
+            border-left: 5px solid var(--accent-teal);
+        }
+        #interactive-result-output h3 {
+            color: var(--accent-teal);
+            margin-bottom: 8px;
+            font-size: 1.5rem;
+        }
+        #interactive-result-value {
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            word-break: break-all;
+        }
+
+        /* Styles Spécifiques aux Booléens */
+        .text-green { color: var(--accent-green); }
+        .text-red { color: var(--accent-red); }
+
+        /* Responsivité */
+        @media (max-width: 600px) {
+            body { padding: 15px; }
+            h1 { font-size: 1.75rem; }
+            header p { font-size: 1rem; }
+            .main-container { padding: 20px; }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Calculatrice JavaScript Interactive</h1>
+        <p>Testez les fonctions de manipulation de chaînes, tableaux et mathématiques en temps réel.</p>
+    </header>
+
+    <main class="main-container">
+        
+        <!-- Conteneur des boutons d'onglet -->
+        <div class="tab-buttons" id="tab-buttons">
+            <button class="tab-button active" data-tab="string-tab">Chaînes</button>
+            <button class="tab-button" data-tab="array-tab">Tableaux</button>
+            <button class="tab-button" data-tab="math-tab">Math</button>
+        </div>
+
+        <!-- Contenu des Onglets -->
+        <div id="string-tab" class="tab-content active">
+            <label for="string-input" style="color: var(--text-light); display: block; margin-bottom: 5px;">Saisissez une phrase :</label>
+            <textarea id="string-input" rows="3" placeholder="Ex: coder en javascript c'est facile."></textarea>
+            
+            <div class="action-buttons">
+                <button class="calc-button" onclick="handleStringOperation('reverse')">Inverser la Chaîne</button>
+                <button class="calc-button" onclick="handleStringOperation('count')">Compter les Caractères</button>
+                <button class="calc-button" onclick="handleStringOperation('capitalize')">Capitaliser les Mots</button>
+            </div>
+        </div>
+
+        <div id="array-tab" class="tab-content">
+            <label for="array-input" style="color: var(--text-light); display: block; margin-bottom: 5px;">Saisissez des nombres séparés par des virgules :</label>
+            <input type="text" id="array-input" value="42, 10, 88, 5, 95, 23, 100" placeholder="Ex: 10, 20, 30, 40">
+            
+            <div class="action-buttons">
+                <button class="calc-button" onclick="handleArrayOperation('max')">Max</button>
+                <button class="calc-button" onclick="handleArrayOperation('min')">Min</button>
+                <button class="calc-button" onclick="handleArrayOperation('sum')">Somme</button>
+                <button class="calc-button" onclick="handleArrayOperation('filter')">Filtrer (> 50)</button>
+            </div>
+        </div>
+
+        <div id="math-tab" class="tab-content">
+            <label for="math-input" style="color: var(--text-light); display: block; margin-bottom: 5px;">Saisissez un nombre entier (pour Factorielle, Premier, Fibonacci) :</label>
+            <input type="number" id="math-input" value="7" min="0">
+            
+            <div class="action-buttons">
+                <button class="calc-button" onclick="handleMathOperation('factorial')">Factorielle</button>
+                <button class="calc-button" onclick="handleMathOperation('prime')">Nombre Premier ?</button>
+                <button class="calc-button" onclick="handleMathOperation('fibonacci')">Séquence Fibonacci</button>
+            </div>
+        </div>
+        
+        <!-- Affichage des Résultats Interactifs -->
+        <div id="interactive-result-output">
+            <h3>Résultat</h3>
+            <code id="interactive-result-value">Cliquez sur un bouton pour commencer le calcul.</code>
+        </div>
+
+    </main>
+
+    <script>
+        const resultValueElement = document.getElementById('interactive-result-value');
+        const stringInput = document.getElementById('string-input');
+        const arrayInput = document.getElementById('array-input');
+        const mathInput = document.getElementById('math-input');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        function updateResult(title, result, dataType = 'string') {
+            let resultText = String(result);
+            let resultTitle = title;
+
+            if (dataType === 'array') {
+                resultText = `[${result.join(', ')}]`;
+            } else if (dataType === 'boolean') {
+                const colorClass = result ? 'text-green' : 'text-red';
+                resultText = result ? 'VRAI' : 'FAUX';
+                resultText = `<span class="${colorClass}">${resultText}</span>`;
+            }
+
+            resultValueElement.innerHTML = resultText;
+            document.querySelector('#interactive-result-output h3').textContent = `Résultat : ${resultTitle}`;
+        }
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                button.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+                
+                updateResult("Prêt", "Entrez vos données et cliquez sur une opération.", 'string');
+            });
+        });
+
+        function getNumberArray() {
+            const raw = arrayInput.value;
+            return raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
+        }
+
+
+        /* -----------------------------------------------------------
+         * 1. String Manipulation Functions
+         * ----------------------------------------------------------- */
+
+        function reverseString(str) {
+            return str.split('').reverse().join('');
+        }
+
+        function countCharacters(str) {
+            return str.length;
+        }
+
+        function capitalizeWords(str) {
+            return str
+                .toLowerCase()
+                .split(' ')
+                .map(word => {
+                    if (word.length === 0) return word;
+                    return word.charAt(0).toUpperCase() + word.slice(1);
+                })
+                .join(' ');
+        }
+        
+        function handleStringOperation(operation) {
+            const str = stringInput.value;
+            let result;
+            let title;
+
+            switch (operation) {
+                case 'reverse':
+                    result = reverseString(str);
+                    title = "Chaîne Inversée";
+                    break;
+                case 'count':
+                    result = countCharacters(str);
+                    title = "Nombre de Caractères";
+                    break;
+                case 'capitalize':
+                    result = capitalizeWords(str);
+                    title = "Mots Capitalisés";
+                    break;
+            }
+            updateResult(title, result);
+        }
+
+
+        /* -----------------------------------------------------------
+         * 2. Array Functions
+         * ----------------------------------------------------------- */
+
+        function findMaximum(arr) {
+            return Math.max(...arr);
+        }
+
+        function findMinimum(arr) {
+            return Math.min(...arr);
+        }
+
+        function sumArray(arr) {
+            return arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        }
+
+        function filterArray(arr, condition) {
+            return arr.filter(condition);
+        }
+        
+        function handleArrayOperation(operation) {
+            const arr = getNumberArray();
+            if (arr.length === 0) {
+                updateResult("Erreur", "Veuillez saisir des nombres valides.", 'string');
+                return;
+            }
+            
+            let result;
+            let title;
+            let dataType = 'string';
+
+            switch (operation) {
+                case 'max':
+                    result = findMaximum(arr);
+                    title = "Maximum";
+                    break;
+                case 'min':
+                    result = findMinimum(arr);
+                    title = "Minimum";
+                    break;
+                case 'sum':
+                    result = sumArray(arr);
+                    title = "Somme Totale";
+                    break;
+                case 'filter':
+                    result = filterArray(arr, n => n > 50);
+                    title = "Filtré (> 50)";
+                    dataType = 'array';
+                    break;
+            }
+            updateResult(title, result, dataType);
+        }
+
+
+        /* -----------------------------------------------------------
+         * 3. Mathematical Functions
+         * ----------------------------------------------------------- */
+
+        function factorial(n) {
+            if (n < 0) return NaN;
+            if (n === 0 || n === 1) return 1;
+
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        function isPrime(n) {
+            if (n <= 1) return false;
+            for (let i = 2; i * i <= n; i++) {
+                if (n % i === 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function fibonacciSequence(terms) {
+            if (terms <= 0) return [];
+            if (terms === 1) return [0];
+
+            let sequence = [0, 1];
+            for (let i = 2; i < terms; i++) {
+                sequence.push(sequence[i - 1] + sequence[i - 2]);
+            }
+            return sequence;
+        }
+        
+        function handleMathOperation(operation) {
+            const num = parseInt(mathInput.value);
+            if (isNaN(num)) {
+                updateResult("Erreur", "Veuillez saisir un nombre valide.", 'string');
+                return;
+            }
+            
+            let result;
+            let title;
+            let dataType = 'string';
+
+            switch (operation) {
+                case 'factorial':
+                    result = factorial(num);
+                    title = `Factorielle de ${num}`;
+                    break;
+                case 'prime':
+                    result = isPrime(num);
+                    title = `Est-ce un nombre premier ? (${num})`;
+                    dataType = 'boolean';
+                    break;
+                case 'fibonacci':
+                    result = fibonacciSequence(num);
+                    title = `Séquence Fibonacci (${num} termes)`;
+                    dataType = 'array';
+                    break;
+            }
+            updateResult(title, result, dataType);
+        }
+        
+        window.onload = () => {
+            updateResult("Prêt", "Entrez vos données et cliquez sur une opération.", 'string');
+        };
+
+    </script>
+</body>
+</html>
